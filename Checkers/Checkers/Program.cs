@@ -10,11 +10,17 @@ namespace Checkers
 {
     public class Program
     {
-        
         static void Main(string[] args)
         {
+            Console.SetWindowSize(200, 60);
             Game game = new Game();
-            game.StartGame();
+
+            Player firstPlayer = new Player();
+            Player secondPlayer = new Player();
+
+            
+
+            game.StartGame(firstPlayer, secondPlayer);
             Console.ReadLine();
         }
     }

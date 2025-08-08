@@ -10,13 +10,15 @@ namespace Checkers.Model
     {
         public Field Field { get; set; }
 
+        public Player player { get; set; }
+
         public Game()
         {
-            Field = new Field();
         }
 
-        public void StartGame()
+        public void StartGame(Player firstPlayer, Player secondPlayer)
         {
+            Field field = new Field(firstPlayer, secondPlayer);
         }
     }
 }

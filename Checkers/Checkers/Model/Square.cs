@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace Checkers.Model
 {
-    public class User
+    public class Square
     {
+        public Cell[,] Cells { get; set; }
+
+
+
+
     }
 }

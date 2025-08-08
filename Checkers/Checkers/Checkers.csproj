@@ -44,11 +44,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Cell.cs" />
+    <Compile Include="Model\Cheacker.cs" />
     <Compile Include="Model\Enum\TypeCell.cs" />
     <Compile Include="Model\Field.cs" />
     <Compile Include="Model\Game.cs" />
+    <Compile Include="Model\Player.cs" />
     <Compile Include="Model\Point.cs" />
-    <Compile Include="Model\User.cs" />
+    <Compile Include="Model\Square.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
