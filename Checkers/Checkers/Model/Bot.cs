@@ -6,22 +6,22 @@ using System.Threading.Tasks;
 
 namespace Checkers.Model
 {
-    public class Player : User 
+    public class Bot : User
     {
-        public Player ( string name, bool checkerColorWhite) 
+        public Bot(string name, bool checkerColorWhite)
             : base(name, checkerColorWhite)
         {
             Name = name;
 
             CheckerColorWhite = checkerColorWhite;
 
-            Checker = new Checker[12];
-
             CreateCheckersArrray();
         }
 
         public override void CreateCheckersArrray()
         {
+            Checker = new Checker[12];
+
             for (int i = 0; i < Checker.Length; i++)
             {
                 if (CheckerColorWhite)

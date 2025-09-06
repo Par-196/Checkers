@@ -1,4 +1,4 @@
-﻿using Checkers.Model.Enum;
+﻿using Checkers.Model.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,57 +9,56 @@ namespace Checkers.Model
 {
     public class Cell
     {
-        public Point Point { get; set; }
-        public TypeCell Type { get; set; }
+        public Point[,] Point { get; set; }
 
-        public Cell(Point point, TypeCell type)
+        public bool IsCheckerHere { get; set; }
+
+        public bool IsWhiteChecker { get; set; }
+
+        public Cell(TypeCell type)
         {
-            Point = point;
-            Type = type;    
+            Point = new Point[5, 11];
+
+            for (int x = 0; x < Point.GetLength(0); x++)
+            {
+                for (int y = 0; y < Point.GetLength(1); y++)
+                {
+                    Point[x, y] = new Point(x, y, type);
+                }
+            }
         }
 
-        
-        public override string ToString()
+        public void SelectedChecker()
         {
-            switch (Type)
+            for (int x = 0; x < Point.GetLength(0); x++)
             {
-                case TypeCell.BlackCell:
-                    {
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        return " ";
-                    }
-                case TypeCell.WhiteCell:
-                    {
-                        Console.BackgroundColor = ConsoleColor.White;
-                        return " ";
-                    }
-                case TypeCell.RedCell:
-                    {
-                        Console.BackgroundColor = ConsoleColor.Red;
-                        return " ";
-                    }
-                case TypeCell.GreenCell:
-                    {
-                        Console.BackgroundColor = ConsoleColor.Green;
-                        return " ";
-                    }
-                case TypeCell.PossibleMoveCell:
-                    {
-                        Console.BackgroundColor = ConsoleColor.Blue;
-                        return " ";
-                    }
-                case TypeCell.GrayCheckersCell:
-                    {
-                        Console.BackgroundColor = ConsoleColor.Gray;
-                        return " ";
-                    }
-                case TypeCell.WhiteCheckersCell:
-                    {
-                        Console.BackgroundColor = ConsoleColor.White;
-                        return " ";
-                    }
+                for (int y = 0; y < Point.GetLength(1); y++)
+                {
+                    Point[x, y].Type = TypeCell.SelectedChecker;
+                }
             }
-            return "Error";
+        }
+
+        public void PosibleMoveCell()
+        {
+            for (int x = 0; x < Point.GetLength(0); x++)
+            {
+                for (int y = 0; y < Point.GetLength(1); y++)
+                {
+                    Point[x, y].Type = TypeCell.PossibleMoveCell;
+                }
+            }
+        }
+
+        public void ImpossibleMove()
+        {
+            for (int x = 0; x < Point.GetLength(0); x++)
+            {
+                for (int y = 0; y < Point.GetLength(1); y++)
+                {
+                    Point[x, y].Type = TypeCell.ImpossibleMove;
+                }
+            }
         }
     }
 }

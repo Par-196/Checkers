@@ -4,14 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Checkers.Model
+namespace Checkers.Model.Enums
 {
-    public class Square
+    public enum OfferADrawMenu
     {
-        public Cell[,] Cells { get; set; }
-
-
-
-
+        Yes = 1,
+        No
     }
 }

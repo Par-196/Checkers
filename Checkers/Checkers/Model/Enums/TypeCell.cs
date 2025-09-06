@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Checkers.Model.Enum
+namespace Checkers.Model.Enums
 {
     public enum TypeCell
     {
         BlackCell = 1,
         WhiteCell,
-        RedCell,
-        GreenCell,
+        ImpossibleMove,
         PossibleMoveCell,
+        SelectedChecker,
         GrayCheckersCell,
         WhiteCheckersCell
     }

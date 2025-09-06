@@ -1,31 +1,89 @@
-﻿using Checkers.Model.Enum;
+﻿using Checkers.Model.Enums;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Security.Permissions;
 
 namespace Checkers.Model
 {
     public class Field
     {
         public Cell[,] Cells { get; set; }
-        public Player Player { get; set; }
 
-        public Field(Player player1, Player player2)
+        public Field(Cell[,] cells, User firstPlayer, User secondPlayer)
         {
+            bool cellType = true;
 
-            Cell[,] cells = new Cell[40, 88];
-            int countCells = 0;
-            int countRows = 0;
-            bool isBlack = true;
-            int numb = 8;
-            Console.WriteLine("\n           A          B          C          D          E          F          G          H\n");
-
-            for (int x = 0; x < 95; x++)
+            for (int x = 0; x < cells.GetLength(0); x++)
             {
-                if (x > 4)
+                cellType = !cellType;
+                for (int y = 0; y < cells.GetLength(1); y++)
+                {
+                    cellType = !cellType;
+                    if (cellType)
+                    {
+                        cells[x, y] = new Cell(TypeCell.WhiteCell);
+                    }
+                    else
+                    {
+                        cells[x, y] = new Cell(TypeCell.BlackCell);
+                    }
+                }
+            }
+            PutCheckersOnField(cells, firstPlayer);
+            PutCheckersOnField(cells, secondPlayer);
+
+        }
+
+        public void PutCheckersOnField(Cell[,] cells, User user)
+        {
+            int checker = 0;
+            int x = 0;
+            int cursorCordinateX = 0;
+
+            if (!user.CheckerColorWhite)
+            {
+                x = 5;
+            }
+            for (; x < cells.GetLength(0); x++)
+            {
+                for (int y = 0; y < cells.GetLength(1); y++)
+                {
+                    for (int i = 0; i < cells[x, y].Point.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < cells[x, y].Point.GetLength(1); j++)
+                        {
+                            if (cells[x, y].Point[i, j].Type == TypeCell.BlackCell && checker < 12)
+                            {
+                                cells[x, y].Point[i, j].Type = user.Checker[checker].Points[i, j].Type;
+                                user.Checker[checker].X = x;
+                                user.Checker[checker].Y = y;
+                                cells[x, y].IsCheckerHere = true;
+                                if (user.CheckerColorWhite)
+                                {
+                                    cells[x, y].IsWhiteChecker = true;
+                                }
+                                else
+                                {
+                                    cells[x, y].IsWhiteChecker = false;
+                                }
+                            }
+                        }
+                    }
+                    if (cells[x, y].Point[0, 0].Type == TypeCell.BlackCell)
+                    {
+                        checker++;
+                    }
+                }
+            }
+        }
+
+        public void DrawField(Cell[,] cells)
+        {
+            Console.WriteLine("\n             A          B          C          D          E          F          G          H\n");
+
+            for (int i = 0; i < cells[0, 0].Point.GetLength(1) * 8 + 9; i++)
+            {
+                if (i > 6)
                 {
                     Console.ForegroundColor = ConsoleColor.DarkCyan;
                     Console.Write("\u2584");
@@ -36,51 +94,37 @@ namespace Checkers.Model
                     Console.Write(" ");
                 }
             }
-
             Console.WriteLine();
 
-            for (int x = 0; x < 40; x++)
+            for (int x = 0; x < cells.GetLength(0); x++)
             {
-                countRows++;
-                if (x == 2 || x == 7 || x == 12 || x == 17 || x == 22 || x == 27 || x == 32 || x == 37)
+                for (int i = 0; i < cells[x, 0].Point.GetLength(0); i++)
                 {
-                    Console.Write($"  {numb--}  ");
-                }
-                else
-                {
-                    Console.Write("     ");
-                }
-                Console.BackgroundColor = ConsoleColor.DarkCyan;
-                Console.Write(" ");
-                Console.ResetColor();
 
-                for (int y = 0; y < 88; y++)
-                {
-                    if (countCells % 11 == 0)
+                    Console.Write(i == cells[x, 0].Point.GetLength(0) / 2 ? $"   {x}   " : $"       ");
+                    Console.BackgroundColor = ConsoleColor.DarkCyan;
+                    Console.Write($" ");
+
+                    for (int y = 0; y < cells.GetLength(1); y++)
                     {
-                        isBlack = !isBlack;
+                        for (int j = 0; j < cells[x, y].Point.GetLength(1); j++)
+                        {
+                            Console.Write(cells[x, y].Point[i, j]);
+                        }
                     }
-                    countCells = WhiteAndBlackCellOutput(isBlack, cells, x, y, countCells);
-                }
-                if (countRows % 5 == 0)
-                {
-                    isBlack = !isBlack;
-                    countCells = 11;
-                }
-                else
-                {
-                    countCells = 0;
-                }
-                Console.BackgroundColor = ConsoleColor.DarkCyan;
-                Console.Write(" ");
-                Console.ResetColor();
 
-                Console.WriteLine();
+                    Console.BackgroundColor = ConsoleColor.DarkCyan;
+                    Console.Write($" ");
+                    Console.ResetColor();
+                    Console.WriteLine();
+
+                }
+
             }
 
-            for (int x = 0; x < 95; x++)
+            for (int i = 0; i < cells[0, 0].Point.GetLength(1) * 8 + 9; i++)
             {
-                if (x > 4)
+                if (i > 6)
                 {
                     Console.ForegroundColor = ConsoleColor.DarkCyan;
                     Console.Write("\u2580");
@@ -91,29 +135,48 @@ namespace Checkers.Model
                     Console.Write(" ");
                 }
             }
-            Console.WriteLine();
-            
         }
 
-        public int WhiteAndBlackCellOutput(bool isBlack, Cell[,] cells, int x, int y, int countCells)
+        public bool ChooseAChecker(Cell[,] cells, User user, int xChecker, int yChecker)
         {
-            if (isBlack == false)
+            for (int i = 0; i < cells[xChecker, yChecker].Point.GetLength(0); i++)
             {
-                Console.Write(cells[x, y] = new Cell(new Point(x, y), TypeCell.WhiteCell));
-                Console.ResetColor();
-                countCells++;
-                return countCells;
+                for (int j = 0; j < cells[xChecker, yChecker].Point.GetLength(1); j++)
+                {
+                    if (cells[xChecker, yChecker].IsCheckerHere)
+                    {
+                        if (cells[xChecker, yChecker].IsWhiteChecker == user.CheckerColorWhite)
+                        {
+                            cells[xChecker, yChecker].SelectedChecker();
+                            return true;
+                        }
+                        else
+                        {
+                            Console.SetCursorPosition(106, 10);
+                            Console.Write("This checker is not yours.");
+                            Console.SetCursorPosition(106, 12);
+                            Console.Write("Choose another one.");
+                            Console.SetCursorPosition(106, 14);
+                            Console.ReadLine();
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        Console.SetCursorPosition(106, 10);
+                        Console.Write("There is no checker on this cell.");
+                        Console.SetCursorPosition(106, 12);
+                        Console.Write("Choose another one.");
+                        Console.SetCursorPosition(106, 14);
+                        Console.ReadLine();
+                        return false;
+                    }
+                }
             }
-            else if (isBlack == true)
-            {
-                Console.Write(cells[x, y] = new Cell(new Point(x, y), TypeCell.BlackCell));
-                Console.ResetColor();
-                countCells++;
-                return countCells;
-            }
-            return 0;
+            return false;
         }
 
-        
+
+
     }
 }
