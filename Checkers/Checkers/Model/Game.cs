@@ -363,14 +363,9 @@ namespace Checkers.Model
 
         public (int, int) ChooseYourChecker(Cell[,] cells, User user, int xCheacker, int yCheacker)
         {
-            // Вибрати шашку +
-            // Перевірити кординати шашки, чи вони в межах поля +
-            // Перевірити чи шашка належить гравцю +
-            // Перевірити чи шашка може ходити, тобто чи навколо неї нема інших шашок
-            // Підсвітити шашку +
-            // Підсвітити можливі ходи
-            // Підсвітити неможливі ходи
+            // Після закінченя стерти усі зміни на полі
             string checkerColor = "";
+            bool checkerWasChosen = false;
             if (user.CheckerColorWhite)
             {
                 checkerColor = "White";
@@ -384,7 +379,9 @@ namespace Checkers.Model
             {
                 do
                 {
-                    ClearMenuInGame();
+
+                    Console.Clear();
+                    Field.DrawField(cells);
 
                     Console.SetCursorPosition(106, 4);
                     Console.Write($"Choose your checker : {checkerColor}");
@@ -398,28 +395,27 @@ namespace Checkers.Model
                     ? $"{xCheacker = int.Parse(xUserInput.ToString())}"
                     : "You should input only a number");
 
-
                     Console.SetCursorPosition(106, 8);
                     Console.Write("Y - ");
                     Console.SetCursorPosition(110, 8);
                     var yUserInput = Console.ReadKey(true).KeyChar;
-                    Console.WriteLine(
-                    char.IsDigit(yUserInput)
+                    Console.WriteLine(char.IsDigit(yUserInput)
                     ? $"{yCheacker = int.Parse(yUserInput.ToString())}"
                     : "You should input only a number");
 
+                    
                     Console.SetCursorPosition(106, 10);
                     Console.ReadLine();
+                    checkerWasChosen = Field.ChooseAChecker(cells, user, xCheacker, yCheacker);
+                    Field.ClearField(cells, user);
 
                 } while (xCheacker < -1 || xCheacker > 8 || yCheacker < -1 || yCheacker > 8);
-                Field.ChooseAChecker(cells, user, xCheacker, yCheacker);
-            } while (!Field.ChooseAChecker(cells, user, xCheacker, yCheacker));
+            } while (!checkerWasChosen);
 
 
 
-
-            Console.Clear();
-            Field.DrawField(cells);
+            
+            
 
 
 

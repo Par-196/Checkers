@@ -1,4 +1,5 @@
-﻿using Checkers.Model.Enums;
+﻿using Checkers.Model;
+using Checkers.Model.Enums;
 using System;
 using System.ComponentModel;
 using System.Security.Permissions;
@@ -38,7 +39,6 @@ namespace Checkers.Model
         {
             int checker = 0;
             int x = 0;
-            int cursorCordinateX = 0;
 
             if (!user.CheckerColorWhite)
             {
@@ -139,44 +139,178 @@ namespace Checkers.Model
 
         public bool ChooseAChecker(Cell[,] cells, User user, int xChecker, int yChecker)
         {
-            for (int i = 0; i < cells[xChecker, yChecker].Point.GetLength(0); i++)
+            if (cells[xChecker, yChecker].IsCheckerHere)
             {
-                for (int j = 0; j < cells[xChecker, yChecker].Point.GetLength(1); j++)
+                if (cells[xChecker, yChecker].IsWhiteChecker == user.CheckerColorWhite)
                 {
-                    if (cells[xChecker, yChecker].IsCheckerHere)
+                    if (!IsTheCheckerBlocked(cells, user, xChecker, yChecker))
                     {
-                        if (cells[xChecker, yChecker].IsWhiteChecker == user.CheckerColorWhite)
-                        {
-                            cells[xChecker, yChecker].SelectedChecker();
-                            return true;
-                        }
-                        else
-                        {
-                            Console.SetCursorPosition(106, 10);
-                            Console.Write("This checker is not yours.");
-                            Console.SetCursorPosition(106, 12);
-                            Console.Write("Choose another one.");
-                            Console.SetCursorPosition(106, 14);
-                            Console.ReadLine();
-                            return false;
-                        }
+                        
+                        PossibleCheckerMoves(cells, user, xChecker, yChecker);
+                        Console.Clear();
+                        DrawField(cells);
+                        return true;
                     }
                     else
                     {
-                        Console.SetCursorPosition(106, 10);
-                        Console.Write("There is no checker on this cell.");
-                        Console.SetCursorPosition(106, 12);
-                        Console.Write("Choose another one.");
-                        Console.SetCursorPosition(106, 14);
+                        Console.Clear();
+                        DrawField(cells);
+                        Console.SetCursorPosition(106, 4);
+                        Console.Write("You can't choose this checker, it's blocked");
+                        Console.SetCursorPosition(106, 6);
                         Console.ReadLine();
                         return false;
                     }
                 }
+                else
+                {
+                    Console.SetCursorPosition(106, 10);
+                    Console.Write("This checker is not yours.");
+                    Console.SetCursorPosition(106, 12);
+                    Console.Write("Choose another one.");
+                    Console.SetCursorPosition(106, 14);
+                    Console.ReadLine();
+                    return false;
+                }
+            }
+            else
+            {
+                Console.SetCursorPosition(106, 10);
+                Console.Write("There is no checker on this cell.");
+                Console.SetCursorPosition(106, 12);
+                Console.Write("Choose another one.");
+                Console.SetCursorPosition(106, 14);
+                Console.ReadLine();
+                return false;
+            }
+        }
+
+        public bool IsTheCheckerBlocked(Cell[,] cells, User user, int xChecker, int yChecker)
+        {
+            if (xChecker != 7 || xChecker + 1 < cells.GetLength(0) || xChecker != 0 || xChecker - 1 < cells.GetLength(0))
+            {
+                if (yChecker - 1 >= 0)
+                {
+                    if (yChecker + 1 < 8)
+                    {
+                        if (cells[xChecker, yChecker].IsWhiteChecker && cells[xChecker + 1, yChecker - 1].IsCheckerHere && cells[xChecker + 1, yChecker + 1].IsCheckerHere)
+                        {
+                            cells[xChecker, yChecker].SelectedChecker(user);
+                            cells[xChecker + 1, yChecker + 1].ImpossibleMove(user);
+                            cells[xChecker + 1, yChecker - 1].ImpossibleMove(user);
+                            return true;
+                        }
+                        else if (!cells[xChecker, yChecker].IsWhiteChecker && cells[xChecker - 1, yChecker - 1].IsCheckerHere && cells[xChecker - 1, yChecker + 1].IsCheckerHere)
+                        {
+                            cells[xChecker, yChecker].SelectedChecker(user);
+                            cells[xChecker - 1, yChecker + 1].ImpossibleMove(user);
+                            cells[xChecker - 1, yChecker - 1].ImpossibleMove(user);
+                            return true;
+                        }
+                    }
+                    if (cells[xChecker, yChecker].IsWhiteChecker && cells[xChecker + 1, yChecker - 1].IsCheckerHere)
+                    {
+                        cells[xChecker, yChecker].SelectedChecker(user);
+                        cells[xChecker + 1, yChecker - 1].ImpossibleMove(user);
+                        return true;
+                    }
+                    else if (!cells[xChecker, yChecker].IsWhiteChecker && cells[xChecker - 1, yChecker - 1].IsCheckerHere)
+                    {
+                        cells[xChecker, yChecker].SelectedChecker(user);
+                        cells[xChecker - 1, yChecker - 1].ImpossibleMove(user);
+                        return true;
+                    }
+                }
+                else if (yChecker + 1 < 8)
+                {
+                    if (cells[xChecker, yChecker].IsWhiteChecker && cells[xChecker + 1, yChecker + 1].IsCheckerHere)
+                    {
+                        cells[xChecker, yChecker].SelectedChecker(user);
+                        cells[xChecker + 1, yChecker + 1].ImpossibleMove(user);
+                        return true;
+                    }
+                    else if (!cells[xChecker, yChecker].IsWhiteChecker && cells[xChecker - 1, yChecker + 1].IsCheckerHere)
+                    {
+                        cells[xChecker, yChecker].SelectedChecker(user);
+                        cells[xChecker - 1, yChecker + 1].ImpossibleMove(user);
+                        return true;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("You have gone out of bounds");
             }
             return false;
         }
 
+        public void PossibleCheckerMoves(Cell[,] cells, User user, int xChecker, int yChecker)
+        {
+            if (xChecker != 7 || xChecker + 1 < cells.GetLength(0) || xChecker != 0 || xChecker - 1 < cells.GetLength(0))
+            {
+                if (yChecker - 1 >= 0)
+                {
+                    if (yChecker + 1 < 8)
+                    {
+                        if (!cells[xChecker + 1, yChecker - 1].IsCheckerHere && !cells[xChecker + 1, yChecker + 1].IsCheckerHere)
+                        {
+                            cells[xChecker, yChecker].SelectedChecker(user);
+                            cells[xChecker + 1, yChecker + 1].PosibleMoveCell(user);
+                            cells[xChecker + 1, yChecker - 1].PosibleMoveCell(user);
+                            
+                        }
+                        else if (!cells[xChecker - 1, yChecker - 1].IsCheckerHere && !cells[xChecker - 1, yChecker + 1].IsCheckerHere)
+                        {
+                            cells[xChecker, yChecker].SelectedChecker(user);
+                            cells[xChecker - 1, yChecker + 1].PosibleMoveCell(user);
+                            cells[xChecker - 1, yChecker - 1].PosibleMoveCell(user);
+                            
+                        }
+                    }
+                    if (!cells[xChecker + 1, yChecker - 1].IsCheckerHere)
+                    {
+                        cells[xChecker, yChecker].SelectedChecker(user);
+                        cells[xChecker + 1, yChecker - 1].PosibleMoveCell(user);
+                        
+                    }
+                    else if (!cells[xChecker - 1, yChecker - 1].IsCheckerHere)
+                    {
+                        cells[xChecker, yChecker].SelectedChecker(user);
+                        cells[xChecker - 1, yChecker - 1].PosibleMoveCell(user);
+                        
+                    }
+                }
+                else if (yChecker + 1 < 8)
+                {
+                    if (!cells[xChecker + 1, yChecker + 1].IsCheckerHere)
+                    {
+                        cells[xChecker, yChecker].SelectedChecker(user);
+                        cells[xChecker + 1, yChecker + 1].PosibleMoveCell(user);
+                        
+                    }
+                    else if (!cells[xChecker - 1, yChecker + 1].IsCheckerHere)
+                    {
+                        cells[xChecker, yChecker].SelectedChecker(user);
+                        cells[xChecker - 1, yChecker + 1].PosibleMoveCell(user);
+                        
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("You have gone out of bounds");
+            }
+        }
 
-
+        public void ClearField(Cell[,] cells, User user)
+        {
+            for (int x = 0; x < cells.GetLength(0); x++)
+            {
+                for (int y = 0; y < cells.GetLength(1); y++)
+                {
+                    cells[x, y].ClearCell(cells, user);
+                }
+            }
+        }
     }
 }
