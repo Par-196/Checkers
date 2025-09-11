@@ -16,10 +16,6 @@ namespace Checkers.Model
 
         public bool King { get; set; }
 
-        public int X { get; set; }
-
-        public int Y { get; set; }
-
         public Checker(bool white, bool king) 
         {
             Points = new Point[5, 11];

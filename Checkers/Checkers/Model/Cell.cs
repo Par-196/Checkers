@@ -55,7 +55,7 @@ namespace Checkers.Model
             }
         }
 
-        public void PosibleMoveCell(User user)
+        public void PosibleMoveCell()
         {
             for (int x = 0; x < Point.GetLength(0); x++)
             {
@@ -66,7 +66,32 @@ namespace Checkers.Model
             }
         }
 
-        public void ImpossibleMove(User user)
+        public void ImpossibleMove(Cell[,] cells, int xCell , int yCell)
+        {
+            for (int x = 0; x < Point.GetLength(0); x++)
+            {
+                for (int y = 0; y < Point.GetLength(1); y++)
+                {
+                    if (x == Point.GetLength(0) / 2 && y == Point.GetLength(1) / 2)
+                    {
+                        if (cells[xCell, yCell].IsWhiteChecker)
+                        {
+                            Point[x, y].Type = TypeCell.WhiteCheckersCell;
+                        }
+                        else
+                        {
+                            Point[x, y].Type = TypeCell.GrayCheckersCell;
+                        }
+                    }
+                    else
+                    {
+                        Point[x, y].Type = TypeCell.ImpossibleMove;
+                    }
+                }
+            }
+        }
+
+        public void DrawAChecker(User user)
         {
             for (int x = 0; x < Point.GetLength(0); x++)
             {
@@ -85,13 +110,24 @@ namespace Checkers.Model
                     }
                     else
                     {
-                        Point[x, y].Type = TypeCell.ImpossibleMove;
+                        Point[x, y].Type = TypeCell.BlackCell;
                     }
                 }
             }
         }
 
-        public void ClearCell(Cell[,] cells, User user)
+        public void DeleteAChecker()
+        {
+            for (int x = 0; x < Point.GetLength(0); x++)
+            {
+                for (int y = 0; y < Point.GetLength(1); y++)
+                {
+                    Point[x, y].Type = TypeCell.BlackCell;
+                }
+            }
+        }
+
+        public void ClearCell(User user)
         {
             for (int x = 0; x < Point.GetLength(0); x++)
             {

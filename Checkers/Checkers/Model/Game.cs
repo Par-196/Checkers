@@ -1,5 +1,6 @@
 ﻿using Checkers.Model.Enums;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net;
 using System.Runtime.Remoting.Messaging;
@@ -26,6 +27,10 @@ namespace Checkers.Model
             bool firstPlayerMove = true;
             bool drawOffered = false;
             bool doStep = false;
+            int firstPlayerXChecker = int.MinValue;
+            int firstPlayerYChecker = int.MinValue;
+            int secondPlayerXChecker = int.MinValue;
+            int secondPlayerYChecker = int.MinValue;
             while (!gameEnd)
             {
                 if (!firstPlayer.CheckerColorWhite)
@@ -50,17 +55,11 @@ namespace Checkers.Model
                                 {
                                     case GameMenu.DoStep:
                                         {
-                                            int xChecker = int.MinValue;
-                                            int yChecker = int.MinValue;
-                                            (xChecker, yChecker) = ChooseYourChecker(cells, firstPlayer, xChecker, yChecker);
-                                            
-                                            // Дочекатись ходу гравця
-                                            // Перемістити обрану шашку
-
-
-
-                                            //Виберіть шашку
-                                            // Виберіть куди її поставити
+                                            List<int[]> listOfPossibleMovesToBeatAChecker = new List<int[]>();
+                                            bool posible = false;
+                                            (posible, listOfPossibleMovesToBeatAChecker) = Field.IsItPossibleToBeatACheckers(cells, firstPlayer, listOfPossibleMovesToBeatAChecker, posible);
+                                            (firstPlayerXChecker, firstPlayerYChecker) = ChooseYourChecker(cells, firstPlayer, firstPlayerXChecker, firstPlayerYChecker, listOfPossibleMovesToBeatAChecker, posible);
+                                            MoveYourChecker(cells, firstPlayer, firstPlayerXChecker, firstPlayerYChecker, listOfPossibleMovesToBeatAChecker, posible);
                                             doStep = true;
                                         }
                                         break;
@@ -105,9 +104,11 @@ namespace Checkers.Model
                                 {
                                     case GameMenu.DoStep:
                                         {
-                                            int xChecker = int.MinValue;
-                                            int yChecker = int.MinValue;
-                                            (xChecker, yChecker) = ChooseYourChecker(cells, secondPlayer, xChecker, yChecker);
+                                            List<int[]> listOfPossibleMovesToBeatAChecker = new List<int[]>();
+                                            bool posible = false;
+                                            (posible, listOfPossibleMovesToBeatAChecker) = Field.IsItPossibleToBeatACheckers(cells, secondPlayer, listOfPossibleMovesToBeatAChecker, posible);
+                                            (secondPlayerXChecker, secondPlayerYChecker) = ChooseYourChecker(cells, secondPlayer, secondPlayerXChecker, secondPlayerYChecker, listOfPossibleMovesToBeatAChecker, posible);
+                                            MoveYourChecker(cells, secondPlayer, secondPlayerXChecker, secondPlayerYChecker, listOfPossibleMovesToBeatAChecker, posible);
                                             doStep = true;
                                         }
                                         break;
@@ -361,9 +362,9 @@ namespace Checkers.Model
             }
         }
 
-        public (int, int) ChooseYourChecker(Cell[,] cells, User user, int xCheacker, int yCheacker)
+        public (int, int) ChooseYourChecker(Cell[,] cells, User user, int xChecker, int yChecker, List<int[]> listOfPossibleMovesToBeatAChecker, bool posible)
         {
-            // Після закінченя стерти усі зміни на полі
+            
             string checkerColor = "";
             bool checkerWasChosen = false;
             if (user.CheckerColorWhite)
@@ -374,13 +375,12 @@ namespace Checkers.Model
             {
                 checkerColor = "Black";
             }
-
             do
             {
                 do
                 {
-
                     Console.Clear();
+                    
                     Field.DrawField(cells);
 
                     Console.SetCursorPosition(106, 4);
@@ -390,9 +390,8 @@ namespace Checkers.Model
                     Console.Write("X - ");
                     Console.SetCursorPosition(110, 6);
                     var xUserInput = Console.ReadKey(true).KeyChar;
-                    Console.WriteLine(
-                    char.IsDigit(xUserInput)
-                    ? $"{xCheacker = int.Parse(xUserInput.ToString())}"
+                    Console.WriteLine(char.IsDigit(xUserInput)
+                    ? $"{xChecker = int.Parse(xUserInput.ToString())}"
                     : "You should input only a number");
 
                     Console.SetCursorPosition(106, 8);
@@ -400,31 +399,50 @@ namespace Checkers.Model
                     Console.SetCursorPosition(110, 8);
                     var yUserInput = Console.ReadKey(true).KeyChar;
                     Console.WriteLine(char.IsDigit(yUserInput)
-                    ? $"{yCheacker = int.Parse(yUserInput.ToString())}"
+                    ? $"{yChecker = int.Parse(yUserInput.ToString())}"
+                    : "You should input only a number");
+                } while ((xChecker < -1 || xChecker > 8) || (yChecker < -1 || yChecker > 8));
+                Console.SetCursorPosition(106, 10);
+                var userEnter = Console.ReadKey(true).Key;
+                checkerWasChosen = Field.ChooseAChecker(cells, user, xChecker, yChecker,listOfPossibleMovesToBeatAChecker ,posible);
+                
+            } while (!checkerWasChosen);
+            return (xChecker, yChecker);
+        }
+
+        public void MoveYourChecker(Cell[,] cells, User user, int xChecker, int yChecker, List<int[]> listOfPossibleMovesToBeatAChecker, bool posible)
+        {
+            int xMoveChecker = int.MinValue;
+            int yMoveChecker = int.MinValue;
+            bool moveWasMade = false;
+            do
+            {
+                do
+                {
+                    Console.Clear();
+                    Field.DrawField(cells);
+                    Console.SetCursorPosition(106, 4);
+                    Console.Write($"Where to put the checker ?");
+
+                    Console.SetCursorPosition(106, 6);
+                    Console.Write("X - ");
+                    Console.SetCursorPosition(110, 6);
+                    var xUserInput = Console.ReadKey(true).KeyChar;
+                    Console.WriteLine(char.IsDigit(xUserInput)
+                    ? $"{xMoveChecker = int.Parse(xUserInput.ToString())}"
                     : "You should input only a number");
 
-                    
-                    Console.SetCursorPosition(106, 10);
-                    Console.ReadLine();
-                    checkerWasChosen = Field.ChooseAChecker(cells, user, xCheacker, yCheacker);
-                    Field.ClearField(cells, user);
+                    Console.SetCursorPosition(106, 8);
+                    Console.Write("Y - ");
+                    Console.SetCursorPosition(110, 8);
+                    var yUserInput = Console.ReadKey(true).KeyChar;
+                    Console.WriteLine(char.IsDigit(yUserInput)
+                    ? $"{yMoveChecker = int.Parse(yUserInput.ToString())}"
+                    : "You should input only a number");
 
-                } while (xCheacker < -1 || xCheacker > 8 || yCheacker < -1 || yCheacker > 8);
-            } while (!checkerWasChosen);
-
-
-
-            
-            
-
-
-
-
-
-
-
-
-            return (xCheacker, yCheacker);
+                } while ((xMoveChecker < -1 || xMoveChecker > 8) || (yMoveChecker < -1 || yMoveChecker > 8));
+                moveWasMade = Field.MoveTheChecker(cells, user, xChecker, yChecker, xMoveChecker, yMoveChecker, listOfPossibleMovesToBeatAChecker, posible);
+            } while (!moveWasMade);
         }
     }
 }
