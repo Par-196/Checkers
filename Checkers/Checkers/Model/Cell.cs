@@ -17,6 +17,8 @@ namespace Checkers.Model
 
         public bool IsWhiteChecker { get; set; }
 
+        public bool King { get; set; }
+
         public Cell(TypeCell type)
         {
             Point = new Point[5, 11];
@@ -30,114 +32,20 @@ namespace Checkers.Model
             }
         }
 
-        public void SelectedChecker(User user)
+        public void DrawSelectedImposibleSimpeChecker(Cell[,] cells, int xChecker, int yCkecker, TypeCell type)
         {
             for (int x = 0; x < Point.GetLength(0); x++)
             {
                 for (int y = 0; y < Point.GetLength(1); y++)
                 {
-                    if (x == Point.GetLength(0) / 2 && y == Point.GetLength(1) / 2)
+                    if (cells[xChecker, yCkecker].King)
                     {
-                        if (user.CheckerColorWhite)
+                        if (x == 1 && y == 5 ||
+                            x == 2 && y == 4 ||
+                            x == 2 && y == 6 ||
+                            x == 3 && y == 5)
                         {
-                            Point[x, y].Type = TypeCell.WhiteCheckersCell;
-                        }
-                        else
-                        {
-                            Point[x, y].Type = TypeCell.GrayCheckersCell;
-                        }
-                    }
-                    else
-                    {
-                        Point[x, y].Type = TypeCell.SelectedChecker;
-                    }
-                }
-            }
-        }
-
-        public void PosibleMoveCell()
-        {
-            for (int x = 0; x < Point.GetLength(0); x++)
-            {
-                for (int y = 0; y < Point.GetLength(1); y++)
-                {
-                    Point[x, y].Type = TypeCell.PossibleMoveCell;
-                }
-            }
-        }
-
-        public void ImpossibleMove(Cell[,] cells, int xCell , int yCell)
-        {
-            for (int x = 0; x < Point.GetLength(0); x++)
-            {
-                for (int y = 0; y < Point.GetLength(1); y++)
-                {
-                    if (x == Point.GetLength(0) / 2 && y == Point.GetLength(1) / 2)
-                    {
-                        if (cells[xCell, yCell].IsWhiteChecker)
-                        {
-                            Point[x, y].Type = TypeCell.WhiteCheckersCell;
-                        }
-                        else
-                        {
-                            Point[x, y].Type = TypeCell.GrayCheckersCell;
-                        }
-                    }
-                    else
-                    {
-                        Point[x, y].Type = TypeCell.ImpossibleMove;
-                    }
-                }
-            }
-        }
-
-        public void DrawAChecker(User user)
-        {
-            for (int x = 0; x < Point.GetLength(0); x++)
-            {
-                for (int y = 0; y < Point.GetLength(1); y++)
-                {
-                    if (x == Point.GetLength(0) / 2 && y == Point.GetLength(1) / 2)
-                    {
-                        if (user.CheckerColorWhite)
-                        {
-                            Point[x, y].Type = TypeCell.WhiteCheckersCell;
-                        }
-                        else
-                        {
-                            Point[x, y].Type = TypeCell.GrayCheckersCell;
-                        }
-                    }
-                    else
-                    {
-                        Point[x, y].Type = TypeCell.BlackCell;
-                    }
-                }
-            }
-        }
-
-        public void DeleteAChecker()
-        {
-            for (int x = 0; x < Point.GetLength(0); x++)
-            {
-                for (int y = 0; y < Point.GetLength(1); y++)
-                {
-                    Point[x, y].Type = TypeCell.BlackCell;
-                }
-            }
-        }
-
-        public void ClearCell(User user)
-        {
-            for (int x = 0; x < Point.GetLength(0); x++)
-            {
-                for (int y = 0; y < Point.GetLength(1); y++)
-                {
-                    if (Point[x, y].Type == TypeCell.SelectedChecker || Point[x, y].Type == TypeCell.ImpossibleMove)
-                    {
-                        if (x == Point.GetLength(0) / 2 && y == Point.GetLength(1) / 2)
-                        {
-                            if (user.CheckerColorWhite)
+                            if (cells[xChecker, yCkecker].IsWhiteChecker)
                             {
                                 Point[x, y].Type = TypeCell.WhiteCheckersCell;
                             }
@@ -146,9 +54,95 @@ namespace Checkers.Model
                                 Point[x, y].Type = TypeCell.GrayCheckersCell;
                             }
                         }
-                        Point[x, y].Type = TypeCell.BlackCell;
+                        else
+                        {
+                            Point[x, y].Type = type;
+                        }
                     }
-                    else if (Point[x, y].Type == TypeCell.PossibleMoveCell)
+                    else
+                    {
+                        if (x == Point.GetLength(0) / 2 && y == Point.GetLength(1) / 2)
+                        {
+                            if (cells[xChecker, yCkecker].IsWhiteChecker)
+                            {
+                                Point[x, y].Type = TypeCell.WhiteCheckersCell;
+                            }
+                            else
+                            {
+                                Point[x, y].Type = TypeCell.GrayCheckersCell;
+                            }
+                        }
+                        else
+                        {
+                            Point[x, y].Type = type;
+                        }
+                    }
+                }
+            }
+        }
+
+        public void DeleteAndDrawaPossibleMoveCell(TypeCell type)
+        {
+            for (int x = 0; x < Point.GetLength(0); x++)
+            {
+                for (int y = 0; y < Point.GetLength(1); y++)
+                {
+                    Point[x, y].Type = type;
+                }
+            }
+        }
+
+        public void ClearCell(Cell[,] cells, int xChecker ,int yCkecker)
+        {
+            for (int x = 0; x < Point.GetLength(0); x++)
+            {
+                for (int y = 0; y < Point.GetLength(1); y++)
+                {
+                    if (cells[xChecker, yCkecker].IsCheckerHere)
+                    {
+                        if (cells[xChecker, yCkecker].King)
+                        {
+                            if (x == 1 && y == 5 ||
+                                x == 2 && y == 4 ||
+                                x == 2 && y == 6 ||
+                                x == 3 && y == 5)
+                            {
+                                if (cells[xChecker, yCkecker].IsWhiteChecker)
+                                {
+                                    Point[x, y].Type = TypeCell.WhiteCheckersCell;
+                                } 
+                                else
+                                {
+                                    Point[x, y].Type = TypeCell.GrayCheckersCell;
+                                }
+                            }
+                            else
+                            {
+                                Point[x, y].Type = TypeCell.BlackCell;
+                            }
+                        }
+                        else
+                        {
+                            if (x == Point.GetLength(0) / 2 && y == Point.GetLength(1) / 2)
+                            {
+                                if (cells[xChecker, yCkecker].IsWhiteChecker)
+                                {
+                                    Point[x, y].Type = TypeCell.WhiteCheckersCell;
+                                }
+                                else
+                                {
+                                    Point[x, y].Type = TypeCell.GrayCheckersCell;
+                                }
+                            }
+                            else
+                            {
+                                Point[x, y].Type = TypeCell.BlackCell;
+                            }
+                        }
+                    }
+                    else if (cells[xChecker, yCkecker].Point[x, y].Type == TypeCell.ImpossibleMove ||
+                        cells[xChecker, yCkecker].Point[x, y].Type == TypeCell.PossibleMoveCell ||
+                        cells[xChecker, yCkecker].Point[x, y].Type == TypeCell.SelectedChecker) 
                     {
                         Point[x, y].Type = TypeCell.BlackCell;
                     }

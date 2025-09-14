@@ -26,11 +26,11 @@ namespace Checkers.Model
             {
                 if (CheckerColorWhite)
                 {
-                    Checker[i] = new Checker(true, false);
+                    Checker[i] = new Checker(true);
                 }
                 else
                 {
-                    Checker[i] = new Checker(false, false);
+                    Checker[i] = new Checker(false);
                 }
             }
         }

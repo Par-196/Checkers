@@ -19,7 +19,6 @@ namespace Checkers.Model
 
         public void StartGame(Player firstPlayer, Player secondPlayer)
         {
-            
             Cell[,] cells = new Cell[8, 8];
             bool gameEnd = false;
             Field = new Field(cells, firstPlayer, secondPlayer);
@@ -55,11 +54,15 @@ namespace Checkers.Model
                                 {
                                     case GameMenu.DoStep:
                                         {
-                                            List<int[]> listOfPossibleMovesToBeatAChecker = new List<int[]>();
                                             bool posible = false;
-                                            (posible, listOfPossibleMovesToBeatAChecker) = Field.IsItPossibleToBeatACheckers(cells, firstPlayer, listOfPossibleMovesToBeatAChecker, posible);
-                                            (firstPlayerXChecker, firstPlayerYChecker) = ChooseYourChecker(cells, firstPlayer, firstPlayerXChecker, firstPlayerYChecker, listOfPossibleMovesToBeatAChecker, posible);
-                                            MoveYourChecker(cells, firstPlayer, firstPlayerXChecker, firstPlayerYChecker, listOfPossibleMovesToBeatAChecker, posible);
+                                            do
+                                            {
+                                                List<int[]> listOfPossibleMovesToBeatAChecker = new List<int[]>();
+                                                (posible, listOfPossibleMovesToBeatAChecker) = Field.IsItPossibleToBeatACheckers(cells, firstPlayer, listOfPossibleMovesToBeatAChecker, posible);
+                                                (firstPlayerXChecker, firstPlayerYChecker) = ChooseYourChecker(cells, firstPlayer, firstPlayerXChecker, firstPlayerYChecker, listOfPossibleMovesToBeatAChecker, posible);
+                                                posible = MoveYourChecker(cells, firstPlayer, firstPlayerXChecker, firstPlayerYChecker, listOfPossibleMovesToBeatAChecker, posible);
+                                            } while (posible);
+                                            
                                             doStep = true;
                                         }
                                         break;
@@ -104,11 +107,15 @@ namespace Checkers.Model
                                 {
                                     case GameMenu.DoStep:
                                         {
-                                            List<int[]> listOfPossibleMovesToBeatAChecker = new List<int[]>();
                                             bool posible = false;
-                                            (posible, listOfPossibleMovesToBeatAChecker) = Field.IsItPossibleToBeatACheckers(cells, secondPlayer, listOfPossibleMovesToBeatAChecker, posible);
-                                            (secondPlayerXChecker, secondPlayerYChecker) = ChooseYourChecker(cells, secondPlayer, secondPlayerXChecker, secondPlayerYChecker, listOfPossibleMovesToBeatAChecker, posible);
-                                            MoveYourChecker(cells, secondPlayer, secondPlayerXChecker, secondPlayerYChecker, listOfPossibleMovesToBeatAChecker, posible);
+                                            do
+                                            {
+                                                List<int[]> listOfPossibleMovesToBeatAChecker = new List<int[]>();
+                                                (posible, listOfPossibleMovesToBeatAChecker) = Field.IsItPossibleToBeatACheckers(cells, secondPlayer, listOfPossibleMovesToBeatAChecker, posible);
+                                                (secondPlayerXChecker, secondPlayerYChecker) = ChooseYourChecker(cells, secondPlayer, secondPlayerXChecker, secondPlayerYChecker, listOfPossibleMovesToBeatAChecker, posible);
+                                                posible = MoveYourChecker(cells, secondPlayer, secondPlayerXChecker, secondPlayerYChecker, listOfPossibleMovesToBeatAChecker, posible);
+                                            } while (posible);
+                                            
                                             doStep = true;
                                         }
                                         break;
@@ -380,7 +387,6 @@ namespace Checkers.Model
                 do
                 {
                     Console.Clear();
-                    
                     Field.DrawField(cells);
 
                     Console.SetCursorPosition(106, 4);
@@ -410,7 +416,7 @@ namespace Checkers.Model
             return (xChecker, yChecker);
         }
 
-        public void MoveYourChecker(Cell[,] cells, User user, int xChecker, int yChecker, List<int[]> listOfPossibleMovesToBeatAChecker, bool posible)
+        public bool MoveYourChecker(Cell[,] cells, User user, int xChecker, int yChecker, List<int[]> listOfPossibleMovesToBeatAChecker, bool posible)
         {
             int xMoveChecker = int.MinValue;
             int yMoveChecker = int.MinValue;
@@ -441,8 +447,9 @@ namespace Checkers.Model
                     : "You should input only a number");
 
                 } while ((xMoveChecker < -1 || xMoveChecker > 8) || (yMoveChecker < -1 || yMoveChecker > 8));
-                moveWasMade = Field.MoveTheChecker(cells, user, xChecker, yChecker, xMoveChecker, yMoveChecker, listOfPossibleMovesToBeatAChecker, posible);
+                (posible, moveWasMade) = Field.MoveTheChecker(cells, user, xChecker, yChecker, xMoveChecker, yMoveChecker, listOfPossibleMovesToBeatAChecker, posible);
             } while (!moveWasMade);
+            return posible;
         }
     }
 }

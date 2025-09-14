@@ -20,5 +20,4 @@ namespace Checkers.Model
 
         public abstract void CreateCheckersArrray();
     }
-
 }

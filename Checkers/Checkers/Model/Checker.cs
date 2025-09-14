@@ -14,15 +14,11 @@ namespace Checkers.Model
 
         public bool White { get; set; }
 
-        public bool King { get; set; }
-
-        public Checker(bool white, bool king) 
+        public Checker(bool white) 
         {
             Points = new Point[5, 11];
 
             White = white;
-
-            King = king;
 
             CreateChecker();
         }
