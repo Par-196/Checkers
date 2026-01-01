@@ -259,6 +259,11 @@ namespace Checkers.Model
 
         //---------------------------------------------------------------------------------
 
+        public void Score()
+        { 
+            
+        }
+
         public void OutputMenuInGame(User user)
         {
             Console.SetCursorPosition(106, 4);

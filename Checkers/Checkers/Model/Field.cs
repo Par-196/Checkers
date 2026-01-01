@@ -63,7 +63,7 @@ namespace Checkers.Model
                                 if (user.CheckerColorWhite)
                                 {
                                     cells[x, y].IsWhiteChecker = true;
-                                    cells[x, y].King = true;
+                                    cells[x, y].King = false;
                                 }
                                 else
                                 {
@@ -391,7 +391,7 @@ namespace Checkers.Model
             }
         }
 
-        public (bool, List<int[]>) IsItPossibleToBeatACheckers(Cell[,] cells, User user, List<int[]> listOfPossibleMovesToBeatAChecker, bool possible)
+        public (bool, List<int[]>) IsItPossibleToBeatACheckers(Cell[,] cells, User user, List<int[]> moves, bool possible)
         {
             for (int xChecker = 0; xChecker < cells.GetLength(0); xChecker++)
             {
@@ -433,7 +433,7 @@ namespace Checkers.Model
                                                 if (topXPlaceToHit >= 0 && leftPlaceToHit >= 0 && !cells[topXPlaceToHit, leftPlaceToHit].IsCheckerHere)
                                                 {
                                                     cells[topXPlaceToHit, leftPlaceToHit].DeleteAndDrawaPossibleMoveCell(TypeCell.PossibleMoveCell);
-                                                    listOfPossibleMovesToBeatAChecker.Add(new int[] { xChecker, yChecker, topEnemyCheckerX, enemyCheckerLeft, topXPlaceToHit, leftPlaceToHit });
+                                                    moves.Add(new int[] { xChecker, yChecker, topEnemyCheckerX, enemyCheckerLeft, topXPlaceToHit, leftPlaceToHit });
                                                     possible = true;
                                                     topXPlaceToHit--;
                                                     leftPlaceToHit--;
@@ -445,10 +445,6 @@ namespace Checkers.Model
                                                 }
                                             }
                                             
-                                        }
-                                        else 
-                                        {
-                                            topLeft = true;
                                         }
                                     }
                                     else
@@ -466,7 +462,7 @@ namespace Checkers.Model
                                                 if (topXPlaceToHit >= 0 && rightPlaceToHit < 8 && !cells[topXPlaceToHit, rightPlaceToHit].IsCheckerHere)
                                                 {
                                                     cells[topXPlaceToHit, rightPlaceToHit].DeleteAndDrawaPossibleMoveCell(TypeCell.PossibleMoveCell);
-                                                    listOfPossibleMovesToBeatAChecker.Add(new int[] { xChecker, yChecker, topEnemyCheckerX, enemyCheckerRight, topXPlaceToHit, rightPlaceToHit });
+                                                    moves.Add(new int[] { xChecker, yChecker, topEnemyCheckerX, enemyCheckerRight, topXPlaceToHit, rightPlaceToHit });
                                                     possible = true;
                                                     topXPlaceToHit--;
                                                     rightPlaceToHit++;
@@ -477,10 +473,6 @@ namespace Checkers.Model
                                                     topRight = true;
                                                 }
                                             }
-                                        }
-                                        else
-                                        {
-                                            topRight = true;
                                         }
                                     }
                                     else
@@ -506,7 +498,7 @@ namespace Checkers.Model
                                                 if (botXPlaceToHit < 8 && leftPlaceToHit >= 0 && !cells[botXPlaceToHit, leftPlaceToHit].IsCheckerHere)
                                                 {
                                                     cells[botXPlaceToHit, leftPlaceToHit].DeleteAndDrawaPossibleMoveCell(TypeCell.PossibleMoveCell);
-                                                    listOfPossibleMovesToBeatAChecker.Add(new int[] { xChecker, yChecker, botEnemyCheckerX, enemyCheckerLeft, botXPlaceToHit, leftPlaceToHit });
+                                                    moves.Add(new int[] { xChecker, yChecker, botEnemyCheckerX, enemyCheckerLeft, botXPlaceToHit, leftPlaceToHit });
                                                     possible = true;
                                                     botXPlaceToHit++;
                                                     leftPlaceToHit--;
@@ -517,10 +509,6 @@ namespace Checkers.Model
                                                     botLeft = true;
                                                 }
                                             }
-                                        }
-                                        else
-                                        {
-                                            botLeft = true;
                                         }
                                     }
                                     else
@@ -538,7 +526,7 @@ namespace Checkers.Model
                                                 if (botXPlaceToHit < 8 && rightPlaceToHit < 8 && !cells[botXPlaceToHit, rightPlaceToHit].IsCheckerHere)
                                                 {
                                                     cells[botXPlaceToHit, rightPlaceToHit].DeleteAndDrawaPossibleMoveCell(TypeCell.PossibleMoveCell);
-                                                    listOfPossibleMovesToBeatAChecker.Add(new int[] { xChecker, yChecker, botEnemyCheckerX, enemyCheckerRight, botXPlaceToHit, rightPlaceToHit });
+                                                    moves.Add(new int[] { xChecker, yChecker, botEnemyCheckerX, enemyCheckerRight, botXPlaceToHit, rightPlaceToHit });
                                                     possible = true;
                                                     botXPlaceToHit++;
                                                     rightPlaceToHit++;
@@ -549,10 +537,6 @@ namespace Checkers.Model
                                                     botRight = true;
                                                 }
                                             }
-                                        }
-                                        else
-                                        {
-                                            botRight = true;
                                         }
                                     }
                                     else
@@ -601,7 +585,7 @@ namespace Checkers.Model
                                                 if (!cells[xPlaceToHit, leftPlaceToHit].IsCheckerHere)
                                                 {
                                                     cells[xPlaceToHit, leftPlaceToHit].DeleteAndDrawaPossibleMoveCell(TypeCell.PossibleMoveCell);
-                                                    listOfPossibleMovesToBeatAChecker.Add(new int[] { xChecker, yChecker, enemyCheckerX, leftEnemyChecker, xPlaceToHit, leftPlaceToHit });
+                                                    moves.Add(new int[] { xChecker, yChecker, enemyCheckerX, leftEnemyChecker, xPlaceToHit, leftPlaceToHit });
                                                     possible = true;
                                                 }
                                             }
@@ -614,7 +598,7 @@ namespace Checkers.Model
                                                 if (!cells[xPlaceToHit, rightPlaceToHit].IsCheckerHere)
                                                 {
                                                     cells[xPlaceToHit, rightPlaceToHit].DeleteAndDrawaPossibleMoveCell(TypeCell.PossibleMoveCell);
-                                                    listOfPossibleMovesToBeatAChecker.Add(new int[] { xChecker, yChecker, enemyCheckerX, rightEnemyChecker, xPlaceToHit, rightPlaceToHit });
+                                                    moves.Add(new int[] { xChecker, yChecker, enemyCheckerX, rightEnemyChecker, xPlaceToHit, rightPlaceToHit });
                                                     possible = true;
                                                 }
                                             }
@@ -628,12 +612,10 @@ namespace Checkers.Model
 
                 }
             }
-            return (possible, listOfPossibleMovesToBeatAChecker);
+            return (possible, moves);
         }
 
-
-
-        public (bool, bool) MoveTheChecker(Cell[,] cells, User user, int xChecker, int yChecker, int xMoveChecker, int yMoveChecker, List<int[]> listOfPossibleMovesToBeatAChecker, bool posible)
+        public (bool, bool) MoveTheChecker(Cell[,] cells, User user, int xChecker, int yChecker, int xMoveChecker, int yMoveChecker, List<int[]> moves, bool possible)
         {
             if (cells[xMoveChecker, yMoveChecker].IsCheckerHere == true ||
                 cells[xMoveChecker, yMoveChecker] == cells[xChecker, yChecker] ||
@@ -646,11 +628,11 @@ namespace Checkers.Model
                 Console.Write("possible moves are highlighted in green.");
                 Console.SetCursorPosition(106, 14);
                 Console.ReadKey();
-                return (posible, false);
+                return (possible, false);
             }
-            else if (posible)
+            else if (possible)
             {
-                foreach (var array in listOfPossibleMovesToBeatAChecker)
+                foreach (var array in moves)
                 {
                     if (array[0] == xChecker && array[1] == yChecker && array[4] == xMoveChecker && array[5] == yMoveChecker)
                     {
@@ -666,9 +648,9 @@ namespace Checkers.Model
                         cells[array[2], array[3]].IsCheckerHere = false;
                         cells[array[2], array[3]].King = false;
                         cells[xChecker, yChecker].IsWhiteChecker = false;
-                        posible = false;
-                        (posible, listOfPossibleMovesToBeatAChecker) = IsItPossibleToBeatACheckers(cells, user, listOfPossibleMovesToBeatAChecker, posible);
-                        if (!posible)
+                        possible = false;
+                        (possible, moves) = IsItPossibleToBeatACheckers(cells, user, moves, possible);
+                        if (!possible)
                         {
                             if ((user.CheckerColorWhite && xMoveChecker == 7 ) || (!user.CheckerColorWhite && xMoveChecker == 0) 
                                 && !cells[xMoveChecker, yMoveChecker].IsCheckerHere)
@@ -680,7 +662,7 @@ namespace Checkers.Model
                         ClearField(cells, user);
                         Console.Clear();
                         DrawField(cells);
-                        return (posible, true);
+                        return (possible, true);
                     }
                 }
                 Console.SetCursorPosition(106, 10);
@@ -689,7 +671,7 @@ namespace Checkers.Model
                 Console.Write("another checker is responsible for this move.");
                 Console.SetCursorPosition(106, 14);
                 Console.ReadKey();
-                return (posible, false);
+                return (possible, false);
             }
             else if (cells[xMoveChecker, yMoveChecker].Point[0, 0].Type == TypeCell.PossibleMoveCell)
             {
@@ -702,7 +684,7 @@ namespace Checkers.Model
                 cells[xChecker, yChecker].IsCheckerHere = false;
                 cells[xChecker, yChecker].King = false;
                 cells[xChecker, yChecker].IsWhiteChecker = false;
-                if (!posible)
+                if (!possible)
                 {
                     if ((user.CheckerColorWhite && xMoveChecker == 7) || (!user.CheckerColorWhite && xMoveChecker == 0)
                                 && !cells[xMoveChecker, yMoveChecker].IsCheckerHere)
@@ -714,9 +696,9 @@ namespace Checkers.Model
                 Console.Clear();
                 ClearField(cells, user);
                 DrawField(cells);
-                return (posible, true);
+                return (possible, true);
             }
-            return (posible, false);
+            return (possible, false);
         }
         
         public void ClearField(Cell[,] cells, User user)
